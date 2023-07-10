@@ -1,87 +1,37 @@
+const buttons = document.querySelectorAll('button');
+const screenDisplay = document.querySelector('.display');
 
-  var operator = ''; // Variable to store the selected operator
-  var firstValue = ''; // Variable to store the first value
-  var secondValue = ''; // Variable to store the second value
+let calculation = [];
+let accumulativeCalculation;
 
+function isOperator(value) {
+  return ['+', '-', '*', '/'].includes(value);
+}
 
-  function displayValue(value) {
-    var display = document.getElementById("calculatorDisplay");
-  
-    if (operator === '') {
-      if (display.innerHTML === "0") {
-        display.innerHTML = value;
-      } else {
-        display.innerHTML += value;
-      }
-      firstValue = parseFloat(display.innerHTML);
-    } else {
-      if (display.innerHTML === "0") {
-        display.innerHTML = value;
-      } else {
-        display.innerHTML += value;
-      }
-      secondValue = parseFloat(display.innerHTML.substring(display.innerHTML.indexOf(operator) + 1));
+function calculate(button) {
+  const value = button.textContent;
+
+  if (value === 'C') {
+    calculation = [];
+    screenDisplay.textContent = '0';
+  } else if (value === '=') {
+    const result = eval(accumulativeCalculation);
+    screenDisplay.textContent = result.toFixed(2); // Round result to 2 decimal places
+  } else if (isOperator(value)) {
+    const lastCharacter = calculation[calculation.length - 1];
+
+    if (!isOperator(lastCharacter)) {
+      calculation.push(value);
+      accumulativeCalculation = calculation.join('');
+      screenDisplay.textContent = accumulativeCalculation;
     }
+  } else {
+    calculation.push(value);
+    accumulativeCalculation = calculation.join('');
+    screenDisplay.textContent = accumulativeCalculation;
   }
-  
+}
 
-  // Function to reset the calculator display and variables
-  function resetDisplay() {
-    var display = document.getElementById("calculatorDisplay");
-    display.innerHTML = "0";
-    operator = '';
-    firstValue = '';
-    secondValue = '';
-  }
-
-  // Function to store the selected operator
-  function selectOperator(selectedOperator) {
-    operator = selectedOperator;
-    var display = document.getElementById("calculatorDisplay");
-    display.innerHTML += selectedOperator;
-  }
-
-  // Function to perform the operation
-  function performOperation() {
-    var display = document.getElementById("calculatorDisplay");
-
-
-    let a = firstValue;
-    let b = secondValue;
-
-    if (operator === '+') {
-      display.innerHTML = add(a, b);
-    } else if (operator === '-') {
-      display.innerHTML = sub(a, b);
-    } else if (operator === '*') {
-      display.innerHTML = mult(a, b);
-    } else if (operator === '/') {
-      display.innerHTML = divi(a, b);
-    } else {
-      display.innerHTML = "ERROR";
-    }
-
-    // Reset variables
-    firstValue = display.innerHTML;
-    secondValue = '';
-    operator = '';
-  }
-
-  // Calculator operation functions (add, sub, mult, divi)
-
-  function add(a, b) {
-    return a + b;
-  }
-
-  function sub(a, b) {
-    return a - b;
-  }
-
-  function mult(a, b) {
-    return a * b;
-  }
-
-  function divi(a, b) {
-    return a / b;
-  }
-
+buttons.forEach((button) =>
+  button.addEventListener('click', () => calculate(button))
+);
